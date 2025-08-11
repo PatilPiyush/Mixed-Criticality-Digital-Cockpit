@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Blueprint: Mixed-Criticality Digital Cockpit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Tech Neutral (Slate grays with a sky blue accent) -->
+    <!-- Application Structure Plan: A single-page dashboard structure with vertical scrolling and a sticky navigation bar. The key sections are: Overview, Interactive Architecture, Project Goals, an Interactive Implementation Roadmap (timeline), Technology Stack, and Deliverables. This structure deconstructs the dense technical document into manageable, interactive sections, prioritizing user exploration and understanding of the project's flow over a static, linear presentation. -->
+    <!-- Visualization & Content Choices: Architecture Diagram (Section 3.0) -> Goal: Organize/Inform -> Viz: Interactive HTML/CSS block diagram -> Interaction: Click-to-reveal details on components -> Justification: More intuitive than text. | Implementation Plan (Section 4.0) -> Goal: Organize/Change -> Viz: Interactive horizontal timeline -> Interaction: Click to expand phase details -> Justification: Makes the project plan dynamic and digestible. | Goals/Tech Stack/Deliverables -> Goal: Inform -> Viz: Icon/logo-based grid/list -> Interaction: Hover effects -> Justification: Improves scannability and visual appeal. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #0ea5e9; /* sky-500 */
+            border-bottom-color: #0ea5e9; /* sky-500 */
+        }
+        .phase-step {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .phase-step.active {
+            background-color: #0ea5e9; /* sky-500 */
+            color: white;
+            transform: scale(1.1);
+        }
+        .phase-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .phase-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .arch-block {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .arch-block:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+        .modal-content {
+            animation: slideIn 0.3s;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-slate-800 text-white shadow-lg">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight">Mixed-Criticality Digital Cockpit</h1>
+            <p class="mt-4 text-lg text-slate-300 max-w-3xl mx-auto">An interactive blueprint for developing a virtualized automotive system using QNX, Linux, and Android.</p>
+        </div>
+    </header>
+
+    <nav id="navbar" class="sticky top-0 bg-white/80 backdrop-blur-md shadow-md z-50">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-center items-center h-16">
+                <div class="flex space-x-4 md:space-x-8 text-sm md:text-base font-medium text-slate-600">
+                    <a href="#overview" class="nav-link py-2 border-b-2 border-transparent">Overview</a>
+                    <a href="#architecture" class="nav-link py-2 border-b-2 border-transparent">Architecture</a>
+                    <a href="#goals" class="nav-link py-2 border-b-2 border-transparent">Goals</a>
+                    <a href="#roadmap" class="nav-link py-2 border-b-2 border-transparent">Roadmap</a>
+                    <a href="#stack" class="nav-link py-2 border-b-2 border-transparent">Tech Stack</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-12 space-y-24">
+        <section id="overview">
+            <h2 class="text-3xl font-bold text-center text-slate-800">Project Overview</h2>
+            <p class="mt-4 max-w-4xl mx-auto text-center text-lg text-slate-600">This project details the design and implementation of a mixed-criticality digital cockpit. The system will consolidate multiple functions with varying safety integrity levels onto a single System-on-a-Chip (SoC) using virtualization. The primary architecture will utilize the QNX Hypervisor, hosting a safety-critical Linux-based instrument cluster and a non-safety-critical Android-based infotainment system. The core objective is to demonstrate safe isolation while enabling efficient communication for a cohesive user experience.</p>
+        </section>
+
+        <section id="architecture">
+            <h2 class="text-3xl font-bold text-center text-slate-800">System Architecture</h2>
+            <p class="mt-4 max-w-4xl mx-auto text-center text-lg text-slate-600">This diagram illustrates the core system architecture. Click on any component to see its role and responsibilities within the system. The design uses a Type 1 Hypervisor to ensure maximum performance and security.</p>
+            <div class="mt-12 max-w-5xl mx-auto p-4 md:p-8 bg-slate-100 rounded-2xl">
+                <div class="arch-block bg-slate-700 text-white p-4 rounded-xl text-center" data-id="soc">
+                    <span class="font-bold text-xl">Physical Hardware (SoC)</span>
+                    <div class="mt-4 p-4 bg-slate-600 rounded-lg" data-id="hypervisor">
+                        <span class="font-bold text-lg">QNX Hypervisor (Host OS)</span>
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="arch-block bg-sky-600 p-4 rounded-lg" data-id="vm1">
+                                <h4 class="font-semibold">Virtual Machine 1 (Safety-Critical)</h4>
+                                <div class="mt-2 p-2 bg-sky-700 rounded">Linux Guest OS</div>
+                                <div class="mt-1 text-sm text-sky-100">- Instrument Cluster</div>
+                            </div>
+                            <div class="arch-block bg-teal-600 p-4 rounded-lg" data-id="vm2">
+                                <h4 class="font-semibold">Virtual Machine 2 (Non-Critical)</h4>
+                                <div class="mt-2 p-2 bg-teal-700 rounded">Android Guest OS</div>
+                                <div class="mt-1 text-sm text-teal-100">- Infotainment System</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 arch-block bg-slate-500 p-3 rounded-lg" data-id="virtio">
+                            <span class="font-semibold">`virtio` Communication Bus</span>
+                            <div class="text-sm text-slate-200">(Shared Memory / Inter-OS Channels)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="goals">
+            <h2 class="text-3xl font-bold text-center text-slate-800">Project Goals</h2>
+             <p class="mt-4 max-w-4xl mx-auto text-center text-lg text-slate-600">The project is defined by five key objectives, ranging from hardware consolidation to validating the final system's safety and integrity through rigorous testing.</p>
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-sky-100 text-sky-600 p-3 rounded-full">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.657 7.343A8 8 0 0118 18c-1 1-2 1-2 1z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-800">Hardware Consolidation</h3>
+                    </div>
+                    <p class="mt-4 text-slate-600">Run safety-critical and non-critical OSes on a single SoC.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                     <div class="flex items-center space-x-4">
+                        <div class="bg-sky-100 text-sky-600 p-3 rounded-full">
+                           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-800">Virtualization & Isolation</h3>
+                    </div>
+                    <p class="mt-4 text-slate-600">Ensure complete spatial and temporal isolation between guest OSes.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                     <div class="flex items-center space-x-4">
+                        <div class="bg-sky-100 text-sky-600 p-3 rounded-full">
+                           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-800">Secure Communication</h3>
+                    </div>
+                    <p class="mt-4 text-slate-600">Establish a robust and secure inter-OS communication channel.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                     <div class="flex items-center space-x-4">
+                        <div class="bg-sky-100 text-sky-600 p-3 rounded-full">
+                           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-800">Core Functionality</h3>
+                    </div>
+                    <p class="mt-4 text-slate-600">Develop a functional instrument cluster and infotainment application.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow">
+                     <div class="flex items-center space-x-4">
+                        <div class="bg-sky-100 text-sky-600 p-3 rounded-full">
+                           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold text-slate-800">Validation</h3>
+                    </div>
+                    <p class="mt-4 text-slate-600">Conduct fault injection tests to confirm criticality separation.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="roadmap">
+            <h2 class="text-3xl font-bold text-center text-slate-800">Implementation Roadmap</h2>
+            <p class="mt-4 max-w-4xl mx-auto text-center text-lg text-slate-600">Follow the project's development through five distinct phases. Click on each phase to see its objectives and key tasks.</p>
+            <div class="mt-12">
+                <div class="relative">
+                    <div class="absolute left-1/2 top-4 bottom-4 w-0.5 bg-slate-300"></div>
+                    <div id="phase-selector" class="flex justify-between items-center">
+                        <div class="phase-step active flex-1 flex justify-center items-center" data-phase="1">
+                            <div class="w-16 h-16 rounded-full bg-white border-4 border-slate-300 flex items-center justify-center font-bold text-xl text-slate-700 transition-all">1</div>
+                        </div>
+                        <div class="phase-step flex-1 flex justify-center items-center" data-phase="2">
+                            <div class="w-16 h-16 rounded-full bg-white border-4 border-slate-300 flex items-center justify-center font-bold text-xl text-slate-700 transition-all">2</div>
+                        </div>
+                        <div class="phase-step flex-1 flex justify-center items-center" data-phase="3">
+                            <div class="w-16 h-16 rounded-full bg-white border-4 border-slate-300 flex items-center justify-center font-bold text-xl text-slate-700 transition-all">3</div>
+                        </div>
+                        <div class="phase-step flex-1 flex justify-center items-center" data-phase="4">
+                            <div class="w-16 h-16 rounded-full bg-white border-4 border-slate-300 flex items-center justify-center font-bold text-xl text-slate-700 transition-all">4</div>
+                        </div>
+                        <div class="phase-step flex-1 flex justify-center items-center" data-phase="5">
+                            <div class="w-16 h-16 rounded-full bg-white border-4 border-slate-300 flex items-center justify-center font-bold text-xl text-slate-700 transition-all">5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="phase-details" class="mt-12">
+                </div>
+            </div>
+        </section>
+
+        <section id="stack">
+            <h2 class="text-3xl font-bold text-center text-slate-800">Technology Stack</h2>
+            <p class="mt-4 max-w-4xl mx-auto text-center text-lg text-slate-600">This project leverages a combination of industry-standard operating systems, virtualization technologies, and development tools to build a robust and reliable system.</p>
+            <div class="mt-12 max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-semibold">QNX SDP & Hypervisor</h3>
+                    <p class="text-sm text-slate-500 mt-1">Host OS & Virtualization</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-semibold">Real-Time Linux</h3>
+                    <p class="text-sm text-slate-500 mt-1">Critical Guest OS</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-semibold">Android Automotive</h3>
+                    <p class="text-sm text-slate-500 mt-1">Non-Critical Guest OS</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-semibold">VirtIO Standard</h3>
+                    <p class="text-sm text-slate-500 mt-1">Inter-OS Communication</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-semibold">QNX Momentics IDE</h3>
+                    <p class="text-sm text-slate-500 mt-1">Development Environment</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-xl font-semibold">C/C++ & Java/Kotlin</h3>
+                    <p class="text-sm text-slate-500 mt-1">Programming Languages</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-400">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; 2025 Piyush Patil. Project Blueprint.</p>
+        </div>
+    </footer>
+
+    <div id="arch-modal" class="modal">
+        <div class="modal-content bg-white rounded-lg shadow-2xl max-w-2xl mx-auto my-20 p-8 relative">
+            <button id="close-modal" class="absolute top-4 right-4 text-slate-500 hover:text-slate-800">&times;</button>
+            <h3 id="modal-title" class="text-2xl font-bold text-slate-800 mb-4"></h3>
+            <div id="modal-body" class="text-slate-600 space-y-2"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const archData = {
+                soc: {
+                    title: 'Physical Hardware (SoC)',
+                    description: '<p>The System-on-a-Chip is the physical foundation of the entire digital cockpit, providing the necessary CPU cores, memory, and peripherals for all operations.</p>'
+                },
+                hypervisor: {
+                    title: 'QNX Hypervisor (Host OS)',
+                    description: '<p>A Type 1 hypervisor running directly on the hardware. It manages CPU scheduling, memory partitioning, and device allocation. It is responsible for enforcing isolation and security between the guest VMs and provides para-virtualized devices (`virtio`) for efficient inter-OS communication.</p>'
+                },
+                vm1: {
+                    title: 'Virtual Machine 1 (Safety-Critical)',
+                    description: '<p>This VM is assigned a higher criticality level (e.g., ASIL B). It runs a real-time Linux kernel optimized for embedded systems and is responsible for the instrument cluster (speedometer, tachometer, warning lights) and any other safety-critical functions. It communicates with the host and other guests via `virtio` devices.</p>'
+                },
+                vm2: {
+                    title: 'Virtual Machine 2 (Non-Critical)',
+                    description: '<p>Assigned a non-criticality level (QM - Quality Managed), this VM runs a standard Android Automotive OS. It handles the infotainment functions, such as media, navigation, and connectivity, communicating with other system components via `virtio` devices.</p>'
+                },
+                virtio: {
+                    title: '`virtio` Communication Bus',
+                    description: '<p>A para-virtualization standard that enables efficient and secure communication between guest OSes and the hypervisor. It will be used to implement shared memory regions, virtual network interfaces, and message-passing between guests.</p>'
+                }
+            };
+
+            const phaseData = {
+                '1': {
+                    title: 'Phase 1: Environment Setup & Toolchain Integration',
+                    objective: 'Establish a working development environment.',
+                    tasks: [
+                        'Acquire and install QNX SDP and the QNX Hypervisor product.',
+                        'Set up a development host with the QNX Momentics Tool Suite.',
+                        'Install and configure a virtual target environment for the QNX host.',
+                        'Build a minimal bootable QNX hypervisor image.'
+                    ]
+                },
+                '2': {
+                    title: 'Phase 2: Hypervisor and Guest OS Configuration',
+                    objective: 'Create and configure the virtual machines for the Linux and Android guests.',
+                    tasks: [
+                        'Define VM configuration files for both guests (CPU, memory, `virtio` devices).',
+                        'Port and build the Linux kernel for the virtualized environment.',
+                        'Port and build the Android Automotive OS for the virtual machine.',
+                        'Develop a basic hypervisor agent to manage guest lifecycles.',
+                        'Establish and test a basic `virtio-console` channel for logging.'
+                    ]
+                },
+                '3': {
+                    title: 'Phase 3: Instrument Cluster Development (Linux Guest)',
+                    objective: 'Create a functional, real-time instrument cluster display.',
+                    tasks: [
+                        'Develop a simulation app on the QNX host to generate vehicle data.',
+                        'Develop a C/C++ app on the Linux guest to read simulated data via `virtio`.',
+                        'Implement a graphics rendering engine to draw gauges.',
+                        'Display the real-time data on a designated virtual display.'
+                    ]
+                },
+                '4': {
+                    title: 'Phase 4: Infotainment System Development (Android Guest)',
+                    objective: 'Implement a non-critical infotainment application.',
+                    tasks: [
+                        'Develop a simple Android application (e.g., media player).',
+                        'Ensure the app can interact with the virtualized system.',
+                        'Integrate the app with the `virtio` layer to share data with the Linux guest.'
+                    ]
+                },
+                '5': {
+                    title: 'Phase 5: Testing and Validation',
+                    objective: 'Verify the safety and functionality of the mixed-criticality system.',
+                    tasks: [
+                        'Conduct fault injection tests on the Android guest.',
+                        'Benchmark the performance of inter-OS communication.',
+                        'Perform integration testing to verify data sharing.',
+                        'Document all test results and lessons learned in a final report.'
+                    ]
+                }
+            };
+
+            const archBlocks = document.querySelectorAll('.arch-block');
+            const modal = document.getElementById('arch-modal');
+            const closeModalBtn = document.getElementById('close-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+
+            archBlocks.forEach(block => {
+                block.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = block.dataset.id;
+                    if (archData[id]) {
+                        modalTitle.textContent = archData[id].title;
+                        modalBody.innerHTML = archData[id].description;
+                        modal.style.display = 'block';
+                    }
+                });
+            });
+
+            const closeModal = () => {
+                modal.style.display = 'none';
+            };
+            closeModalBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            const phaseSelector = document.getElementById('phase-selector');
+            const phaseDetailsContainer = document.getElementById('phase-details');
+
+            function displayPhase(phaseId) {
+                const phase = phaseData[phaseId];
+                if (!phase) return;
+
+                let tasksHtml = '<ul class="list-disc list-inside space-y-2 text-slate-600">';
+                phase.tasks.forEach(task => {
+                    tasksHtml += `<li>${task}</li>`;
+                });
+                tasksHtml += '</ul>';
+
+                phaseDetailsContainer.innerHTML = `
+                    <div class="phase-content active bg-white p-8 rounded-xl shadow-lg max-w-4xl mx-auto">
+                        <h3 class="text-2xl font-bold text-slate-800">${phase.title}</h3>
+                        <p class="mt-2 font-medium text-sky-600">${phase.objective}</p>
+                        <div class="mt-6">
+                            <h4 class="font-semibold text-lg text-slate-700 mb-3">Key Tasks:</h4>
+                            ${tasksHtml}
+                        </div>
+                    </div>
+                `;
+
+                phaseSelector.querySelectorAll('.phase-step').forEach(step => {
+                    step.classList.remove('active');
+                    if (step.dataset.phase === phaseId) {
+                        step.classList.add('active');
+                    }
+                });
+            }
+
+            phaseSelector.addEventListener('click', (e) => {
+                const step = e.target.closest('.phase-step');
+                if (step) {
+                    displayPhase(step.dataset.phase);
+                }
+            });
+
+            displayPhase('1');
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('main section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px' });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
